@@ -1,0 +1,25 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Document base -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M32,24h32l16,16v44c0,4.4 -3.6,8 -8,8H32c-4.4,0 -8,-3.6 -8,-8V32c0,-4.4 3.6,-8 8,-8z" />
+    <!-- Document corner fold -->
+    <path
+        android:fillColor="#D0E4FF"
+        android:pathData="M64,24v16h16z" />
+    <!-- Lines / Items -->
+    <path
+        android:fillColor="#005FB0"
+        android:pathData="M36,44h22v4H36zM36,53h36v4H36zM36,62h28v4H36z" />
+    <!-- Badge circle with checkmark/sparkle -->
+    <path
+        android:fillColor="#22C55E"
+        android:pathData="M72,66c-5.5,0 -10,4.5 -10,10s4.5,10 10,10s10,-4.5 10,-10s-4.5,-10 -10,-10z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M69.5,76.5l-2,-2l-1.5,1.5l3.5,3.5l7,-7l-1.5,-1.5z" />
+</vector>

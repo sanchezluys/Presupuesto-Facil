@@ -1,0 +1,7 @@
+{
+  "name": "Presupuestos",
+  "description": "App para crear, gestionar y enviar presupuestos y cotizaciones profesionales en PDF, imagen o texto con catálogo de productos y servicios.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
