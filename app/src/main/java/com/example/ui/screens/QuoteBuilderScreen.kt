@@ -32,9 +32,11 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Button
@@ -62,6 +64,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -95,6 +98,7 @@ fun QuoteBuilderScreen(
     val profile by viewModel.businessProfile.collectAsState()
     val catalogItems by viewModel.catalogItems.collectAsState()
     val contacts by viewModel.contacts.collectAsState()
+    val isDarkMode by viewModel.isDarkMode.collectAsState()
 
     var showCatalogPicker by remember { mutableStateOf(false) }
     var showClientPicker by remember { mutableStateOf(false) }
@@ -133,25 +137,34 @@ fun QuoteBuilderScreen(
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = { viewModel.toggleDarkMode() },
+                        modifier = Modifier.testTag("dark_mode_toggle_builder")
+                    ) {
+                        Icon(
+                            imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
+                            contentDescription = if (isDarkMode) "Activar modo claro" else "Activar modo oscuro"
+                        )
+                    }
                     IconButton(onClick = { showTaxesAndDiscounts = !showTaxesAndDiscounts }) {
                         Icon(
                             imageVector = Icons.Default.Tune,
                             contentDescription = "Ajustes de impuestos y notas",
-                            tint = if (showTaxesAndDiscounts) MaterialTheme.colorScheme.primary else Color(0xFF64748B)
+                            tint = if (showTaxesAndDiscounts) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
-        containerColor = Color(0xFFF7F9FC),
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             // Footer matching "Artistic Flair" design HTML
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .shadow(12.dp, RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
             ) {
                 Column(
@@ -171,7 +184,7 @@ fun QuoteBuilderScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(20.dp))
-                                .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(20.dp))
+                                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(20.dp))
                                 .clickable {
                                     val quoteWithItems = builderState.toQuoteWithItems()
                                     val uri = QuotePdfGenerator.generatePdf(context, quoteWithItems, profile)
@@ -181,7 +194,7 @@ fun QuoteBuilderScreen(
                                         Toast.makeText(context, "Error al generar PDF", Toast.LENGTH_SHORT).show()
                                     }
                                 },
-                            color = Color(0xFFF8FAFC),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
                             shape = RoundedCornerShape(20.dp)
                         ) {
                             Column(
@@ -195,7 +208,8 @@ fun QuoteBuilderScreen(
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.Bold,
                                         letterSpacing = 1.sp,
-                                        fontSize = 10.sp
+                                        fontSize = 10.sp,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 )
                             }
@@ -206,7 +220,7 @@ fun QuoteBuilderScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(20.dp))
-                                .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(20.dp))
+                                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(20.dp))
                                 .clickable {
                                     val quoteWithItems = builderState.toQuoteWithItems()
                                     val uri = QuoteImageGenerator.generateImage(context, quoteWithItems, profile)
@@ -216,7 +230,7 @@ fun QuoteBuilderScreen(
                                         Toast.makeText(context, "Error al generar Imagen", Toast.LENGTH_SHORT).show()
                                     }
                                 },
-                            color = Color(0xFFF8FAFC),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
                             shape = RoundedCornerShape(20.dp)
                         ) {
                             Column(
@@ -230,7 +244,8 @@ fun QuoteBuilderScreen(
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.Bold,
                                         letterSpacing = 1.sp,
-                                        fontSize = 10.sp
+                                        fontSize = 10.sp,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 )
                             }
@@ -241,7 +256,7 @@ fun QuoteBuilderScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .clip(RoundedCornerShape(20.dp))
-                                .border(1.dp, Color(0xFFE2E8F0), RoundedCornerShape(20.dp))
+                                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(20.dp))
                                 .clickable {
                                     val quoteWithItems = builderState.toQuoteWithItems()
                                     val text = QuoteTextFormatter.generateFormattedText(quoteWithItems, profile)
@@ -251,7 +266,7 @@ fun QuoteBuilderScreen(
                                         ContactPickerHelper.shareText(context, text, "Enviar Presupuesto")
                                     }
                                 },
-                            color = Color(0xFFF8FAFC),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
                             shape = RoundedCornerShape(20.dp)
                         ) {
                             Column(
@@ -265,7 +280,8 @@ fun QuoteBuilderScreen(
                                     style = MaterialTheme.typography.labelSmall.copy(
                                         fontWeight = FontWeight.Bold,
                                         letterSpacing = 1.sp,
-                                        fontSize = 10.sp
+                                        fontSize = 10.sp,
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 )
                             }
@@ -287,7 +303,7 @@ fun QuoteBuilderScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(56.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF005FB0)),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(24.dp)
                     ) {
                         Text(
@@ -295,7 +311,7 @@ fun QuoteBuilderScreen(
                             style = MaterialTheme.typography.titleSmall.copy(
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = 1.5.sp,
-                                color = Color.White
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                         )
                     }
@@ -328,13 +344,16 @@ fun QuoteBuilderScreen(
                             .fillMaxWidth()
                             .padding(16.dp),
                         shape = RoundedCornerShape(24.dp),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.surface,
                         shadowElevation = 2.dp
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
                             Text(
                                 text = "Ajustes de Presupuesto",
-                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                                style = MaterialTheme.typography.titleSmall.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
                             )
                             Spacer(modifier = Modifier.height(10.dp))
 
@@ -411,7 +430,7 @@ fun QuoteBuilderScreen(
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.5.sp,
-                            color = Color(0xFF64748B),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 11.sp
                         )
                     )
@@ -435,7 +454,7 @@ fun QuoteBuilderScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp, vertical = 16.dp)
                             .clip(RoundedCornerShape(24.dp))
-                            .background(Color.White)
+                            .background(MaterialTheme.colorScheme.surface)
                             .padding(24.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -444,14 +463,14 @@ fun QuoteBuilderScreen(
                                 text = "✨ Presupuesto vacío",
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF1E293B)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = "Agrega conceptos desde tu catálogo o crea uno personalizado abajo.",
                                 style = MaterialTheme.typography.bodySmall.copy(
-                                    color = Color(0xFF64748B)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 ),
                                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
                             )
@@ -465,7 +484,7 @@ fun QuoteBuilderScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp, vertical = 5.dp),
                         shape = RoundedCornerShape(24.dp),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.surface,
                         shadowElevation = 1.dp
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
@@ -479,14 +498,14 @@ fun QuoteBuilderScreen(
                                         text = item.name,
                                         style = MaterialTheme.typography.bodyLarge.copy(
                                             fontWeight = FontWeight.SemiBold,
-                                            color = Color(0xFF0F172A)
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
                                     )
                                     if (item.description.isNotBlank()) {
                                         Text(
                                             text = item.description,
                                             style = MaterialTheme.typography.bodySmall.copy(
-                                                color = Color(0xFF64748B)
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         )
                                     }
@@ -497,7 +516,7 @@ fun QuoteBuilderScreen(
                                     text = Formatters.formatMoney(item.total, currency),
                                     style = MaterialTheme.typography.titleMedium.copy(
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF0F172A)
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 )
                             }
@@ -513,7 +532,7 @@ fun QuoteBuilderScreen(
                                 Text(
                                     text = "${Formatters.formatMoney(item.unitPrice, currency)} / ${item.unit}",
                                     style = MaterialTheme.typography.labelMedium.copy(
-                                        color = Color(0xFF64748B)
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 )
 
@@ -526,7 +545,7 @@ fun QuoteBuilderScreen(
                                         modifier = Modifier
                                             .size(30.dp)
                                             .clip(CircleShape)
-                                            .background(Color(0xFFF1F5F9))
+                                            .background(MaterialTheme.colorScheme.surfaceVariant)
                                             .clickable {
                                                 viewModel.updateItemQuantity(index, item.quantity - 1.0)
                                             },
@@ -535,7 +554,7 @@ fun QuoteBuilderScreen(
                                         Icon(
                                             imageVector = if (item.quantity <= 1.0) Icons.Default.Delete else Icons.Default.Remove,
                                             contentDescription = "Restar",
-                                            tint = if (item.quantity <= 1.0) Color(0xFFE11D48) else Color(0xFF475569),
+                                            tint = if (item.quantity <= 1.0) Color(0xFFE11D48) else MaterialTheme.colorScheme.onSurfaceVariant,
                                             modifier = Modifier.size(16.dp)
                                         )
                                     }
@@ -544,7 +563,7 @@ fun QuoteBuilderScreen(
                                         text = Formatters.formatNumber(item.quantity),
                                         style = MaterialTheme.typography.bodyMedium.copy(
                                             fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF0F172A)
+                                            color = MaterialTheme.colorScheme.onSurface
                                         ),
                                         modifier = Modifier.padding(horizontal = 4.dp)
                                     )
@@ -554,7 +573,7 @@ fun QuoteBuilderScreen(
                                         modifier = Modifier
                                             .size(30.dp)
                                             .clip(CircleShape)
-                                            .background(Color(0xFFF1F5F9))
+                                            .background(MaterialTheme.colorScheme.surfaceVariant)
                                             .clickable {
                                                 viewModel.updateItemQuantity(index, item.quantity + 1.0)
                                             },
@@ -563,7 +582,7 @@ fun QuoteBuilderScreen(
                                         Icon(
                                             imageVector = Icons.Default.Add,
                                             contentDescription = "Sumar",
-                                            tint = Color(0xFF475569),
+                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                             modifier = Modifier.size(16.dp)
                                         )
                                     }
@@ -581,9 +600,9 @@ fun QuoteBuilderScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp, vertical = 10.dp)
                         .clip(RoundedCornerShape(24.dp))
-                        .border(1.dp, Color(0xFFCBD5E1), RoundedCornerShape(24.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(24.dp))
                         .clickable { showNewItemDialog = true },
-                    color = Color.White.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f),
                     shape = RoundedCornerShape(24.dp)
                 ) {
                     Box(
@@ -596,7 +615,7 @@ fun QuoteBuilderScreen(
                             Icon(
                                 imageVector = Icons.Default.Add,
                                 contentDescription = null,
-                                tint = Color(0xFF64748B),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
@@ -604,7 +623,7 @@ fun QuoteBuilderScreen(
                                 text = "Agregar concepto personalizado",
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Medium,
-                                    color = Color(0xFF64748B)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             )
                         }
@@ -619,7 +638,7 @@ fun QuoteBuilderScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp, vertical = 12.dp),
                     shape = RoundedCornerShape(24.dp),
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.surface,
                     shadowElevation = 2.dp
                 ) {
                     Column(
@@ -634,13 +653,13 @@ fun QuoteBuilderScreen(
                         ) {
                             Text(
                                 text = "Subtotal",
-                                style = MaterialTheme.typography.bodyMedium.copy(color = Color(0xFF64748B))
+                                style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
                             )
                             Text(
                                 text = Formatters.formatMoney(builderState.subtotal, currency),
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.SemiBold,
-                                    color = Color(0xFF0F172A)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             )
                         }
@@ -673,13 +692,13 @@ fun QuoteBuilderScreen(
                             ) {
                                 Text(
                                     text = "Impuesto / IVA (${Formatters.formatNumber(builderState.quote.taxPercent)}%)",
-                                    style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF64748B))
+                                    style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 )
                                 Text(
                                     text = "+${Formatters.formatMoney(builderState.taxAmount, currency)}",
                                     style = MaterialTheme.typography.bodySmall.copy(
                                         fontWeight = FontWeight.SemiBold,
-                                        color = Color(0xFF0F172A)
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 )
                             }
@@ -690,7 +709,7 @@ fun QuoteBuilderScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(1.dp)
-                                .background(Color(0xFFE2E8F0))
+                                .background(MaterialTheme.colorScheme.outlineVariant)
                         )
                         Spacer(modifier = Modifier.height(12.dp))
 
@@ -704,7 +723,7 @@ fun QuoteBuilderScreen(
                                 text = "Total Estimado",
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.Medium,
-                                    color = Color(0xFF64748B)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             )
 
@@ -712,7 +731,7 @@ fun QuoteBuilderScreen(
                                 text = Formatters.formatMoney(builderState.total, currency),
                                 style = MaterialTheme.typography.headlineMedium.copy(
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF0F172A),
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     letterSpacing = (-1).sp
                                 )
                             )

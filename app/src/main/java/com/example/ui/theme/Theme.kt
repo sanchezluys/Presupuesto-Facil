@@ -35,21 +35,24 @@ private val LightColorScheme = lightColorScheme(
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = BluePrimaryContainer,
-    onPrimary = BlueOnPrimaryContainer,
-    primaryContainer = BluePrimary,
-    onPrimaryContainer = BlueOnPrimary,
-    secondary = SlateSecondaryContainer,
-    onSecondary = SlateOnSecondaryContainer,
-    secondaryContainer = SlateSecondary,
-    onSecondaryContainer = SlateOnSecondary,
-    background = ArtisticOnBackground,
-    onBackground = ArtisticBackground,
-    surface = SlateTertiary,
-    onSurface = ArtisticBackground,
-    surfaceVariant = SlateSecondary,
-    onSurfaceVariant = SlateSecondaryContainer,
-    outline = ArtisticOutlineVariant
+    primary = DarkPrimary,
+    onPrimary = DarkOnPrimary,
+    primaryContainer = DarkPrimaryContainer,
+    onPrimaryContainer = DarkOnPrimaryContainer,
+    secondary = DarkSecondary,
+    onSecondary = DarkOnSecondary,
+    secondaryContainer = DarkSecondaryContainer,
+    onSecondaryContainer = DarkOnSecondaryContainer,
+    tertiary = DarkSecondary,
+    onTertiary = DarkOnSecondary,
+    background = DarkBackground,
+    onBackground = DarkOnBackground,
+    surface = DarkSurface,
+    onSurface = DarkOnSurface,
+    surfaceVariant = DarkSurfaceVariant,
+    onSurfaceVariant = DarkOnSurfaceVariant,
+    outline = DarkOutline,
+    outlineVariant = DarkOutlineVariant
 )
 
 val ArtisticShapes = Shapes(

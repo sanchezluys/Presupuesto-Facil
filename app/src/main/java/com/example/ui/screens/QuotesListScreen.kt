@@ -26,7 +26,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Contacts
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Inventory2
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -52,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -79,6 +82,7 @@ fun QuotesListScreen(
     val context = LocalContext.current
     val quotes by viewModel.quotes.collectAsState()
     val profile by viewModel.businessProfile.collectAsState()
+    val isDarkMode by viewModel.isDarkMode.collectAsState()
 
     var selectedStatusFilter by remember { mutableStateOf<QuoteStatus?>(null) }
     var searchQuery by remember { mutableStateOf("") }
@@ -120,12 +124,21 @@ fun QuotesListScreen(
                                 fontFamily = FontFamily.Serif,
                                 fontStyle = FontStyle.Italic,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF0F172A)
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         )
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = { viewModel.toggleDarkMode() },
+                        modifier = Modifier.testTag("dark_mode_toggle_button")
+                    ) {
+                        Icon(
+                            imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
+                            contentDescription = if (isDarkMode) "Activar modo claro" else "Activar modo oscuro"
+                        )
+                    }
                     IconButton(onClick = { showSearchField = !showSearchField }) {
                         Icon(imageVector = Icons.Default.Search, contentDescription = "Buscar")
                     }
@@ -139,20 +152,20 @@ fun QuotesListScreen(
                         Icon(imageVector = Icons.Default.Business, contentDescription = "Mi Empresa")
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = onNewQuoteClick,
-                containerColor = Color(0xFF005FB0),
-                contentColor = Color.White,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
                 shape = RoundedCornerShape(20.dp),
                 icon = { Icon(imageVector = Icons.Default.Add, contentDescription = null) },
                 text = { Text("Nuevo Presupuesto", fontWeight = FontWeight.Bold) }
             )
         },
-        containerColor = Color(0xFFF7F9FC)
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -184,7 +197,7 @@ fun QuotesListScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp, vertical = 10.dp),
                     shape = RoundedCornerShape(28.dp),
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.surface,
                     shadowElevation = 2.dp
                 ) {
                     Row(
@@ -200,7 +213,7 @@ fun QuotesListScreen(
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Bold,
                                     letterSpacing = 1.2.sp,
-                                    color = Color(0xFF64748B)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             )
                             Spacer(modifier = Modifier.height(4.dp))
@@ -218,14 +231,14 @@ fun QuotesListScreen(
                                 text = "${quotes.size} Presupuestos",
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.SemiBold,
-                                    color = Color(0xFF0F172A)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             )
                             Text(
                                 text = "$acceptedCount Aceptados",
                                 style = MaterialTheme.typography.bodySmall.copy(
-                                    color = Color(0xFF16A34A),
-                                    fontWeight = FontWeight.Medium
+                                    color = if (isDarkMode) Color(0xFF4ADE80) else Color(0xFF16A34A),
+                                    fontWeight = FontWeight.SemiBold
                                 )
                             )
                         }
@@ -245,22 +258,29 @@ fun QuotesListScreen(
                     FilterChip(
                         selected = selectedStatusFilter == null,
                         onClick = { selectedStatusFilter = null },
-                        label = { Text("Todos (${quotes.size})") },
+                        label = { Text("Todos (${quotes.size})", fontWeight = if (selectedStatusFilter == null) FontWeight.Bold else FontWeight.Medium) },
                         shape = RoundedCornerShape(14.dp),
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
 
                     QuoteStatus.values().forEach { status ->
                         val count = quotes.count { it.quote.status == status }
+                        val isSelected = selectedStatusFilter == status
                         FilterChip(
-                            selected = selectedStatusFilter == status,
+                            selected = isSelected,
                             onClick = { selectedStatusFilter = status },
-                            label = { Text("${status.displayName} ($count)") },
+                            label = { Text("${status.displayName} ($count)", fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium) },
                             shape = RoundedCornerShape(14.dp),
                             colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer
+                                selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                labelColor = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         )
                     }
@@ -274,7 +294,7 @@ fun QuotesListScreen(
                     style = MaterialTheme.typography.labelSmall.copy(
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 1.5.sp,
-                        color = Color(0xFF64748B),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 11.sp
                     ),
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 10.dp)
@@ -289,7 +309,7 @@ fun QuotesListScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp, vertical = 40.dp)
                             .clip(RoundedCornerShape(24.dp))
-                            .background(Color.White)
+                            .background(MaterialTheme.colorScheme.surface)
                             .padding(32.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -300,14 +320,14 @@ fun QuotesListScreen(
                                 text = "No hay presupuestos que mostrar",
                                 style = MaterialTheme.typography.titleMedium.copy(
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF0F172A)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = "Toca '+ Nuevo Presupuesto' para comenzar a cotizar.",
                                 style = MaterialTheme.typography.bodySmall.copy(
-                                    color = Color(0xFF64748B)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             )
                         }

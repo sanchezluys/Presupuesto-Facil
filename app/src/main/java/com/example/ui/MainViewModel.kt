@@ -50,6 +50,16 @@ data class QuoteBuilderUiState(
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: QuoteRepository
+    private val prefs = application.getSharedPreferences("app_preferences", android.content.Context.MODE_PRIVATE)
+
+    private val _isDarkMode = MutableStateFlow(prefs.getBoolean("dark_mode_enabled", false))
+    val isDarkMode: StateFlow<Boolean> = _isDarkMode.asStateFlow()
+
+    fun toggleDarkMode() {
+        val next = !_isDarkMode.value
+        _isDarkMode.value = next
+        prefs.edit().putBoolean("dark_mode_enabled", next).apply()
+    }
 
     val businessProfile: StateFlow<BusinessProfile?>
     val catalogItems: StateFlow<List<ProductService>>

@@ -50,11 +50,12 @@ fun QuoteCard(
     modifier: Modifier = Modifier
 ) {
     val q = quoteWithItems.quote
+    val isDark = MaterialTheme.colorScheme.background.value == com.example.ui.theme.DarkBackground.value
     val statusColor = when (q.status) {
-        QuoteStatus.DRAFT -> StatusDraft
-        QuoteStatus.SENT -> StatusSent
-        QuoteStatus.ACCEPTED -> StatusAccepted
-        QuoteStatus.REJECTED -> StatusRejected
+        QuoteStatus.DRAFT -> if (isDark) com.example.ui.theme.StatusDraftDark else com.example.ui.theme.StatusDraftLight
+        QuoteStatus.SENT -> if (isDark) com.example.ui.theme.StatusSentDark else com.example.ui.theme.StatusSentLight
+        QuoteStatus.ACCEPTED -> if (isDark) com.example.ui.theme.StatusAcceptedDark else com.example.ui.theme.StatusAcceptedLight
+        QuoteStatus.REJECTED -> if (isDark) com.example.ui.theme.StatusRejectedDark else com.example.ui.theme.StatusRejectedLight
     }
 
     Card(
@@ -62,7 +63,7 @@ fun QuoteCard(
             .fillMaxWidth()
             .clickable { onClick() },
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -88,7 +89,7 @@ fun QuoteCard(
                         text = "#${q.quoteNumber}",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF0F172A)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     )
                 }
@@ -117,7 +118,7 @@ fun QuoteCard(
                 text = q.clientName.ifBlank { "Cliente General" },
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF1E293B)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             )
 
@@ -125,7 +126,7 @@ fun QuoteCard(
                 Text(
                     text = q.clientCompany,
                     style = MaterialTheme.typography.bodySmall.copy(
-                        color = Color(0xFF64748B)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 )
             }
@@ -142,7 +143,7 @@ fun QuoteCard(
                     Text(
                         text = "${quoteWithItems.items.size} concepto(s) • ${Formatters.formatDate(q.createdAtMillis)}",
                         style = MaterialTheme.typography.bodySmall.copy(
-                            color = Color(0xFF94A3B8)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
                 }
@@ -183,7 +184,7 @@ fun QuoteCard(
                     Icon(
                         imageVector = Icons.Default.Share,
                         contentDescription = "Compartir",
-                        tint = Color(0xFF64748B),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -195,7 +196,7 @@ fun QuoteCard(
                     Icon(
                         imageVector = Icons.Default.ChevronRight,
                         contentDescription = "Ver detalle",
-                        tint = Color(0xFF94A3B8),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(22.dp)
                     )
                 }

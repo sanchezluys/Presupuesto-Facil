@@ -21,10 +21,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -61,6 +65,7 @@ fun BusinessProfileScreen(
 ) {
     val context = LocalContext.current
     val currentProfile by viewModel.businessProfile.collectAsState()
+    val isDarkMode by viewModel.isDarkMode.collectAsState()
 
     var companyName by remember { mutableStateOf("") }
     var ownerName by remember { mutableStateOf("") }
@@ -107,6 +112,15 @@ fun BusinessProfileScreen(
                 },
                 actions = {
                     IconButton(
+                        onClick = { viewModel.toggleDarkMode() },
+                        modifier = Modifier.testTag("dark_mode_toggle_profile")
+                    ) {
+                        Icon(
+                            imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
+                            contentDescription = if (isDarkMode) "Activar modo claro" else "Activar modo oscuro"
+                        )
+                    }
+                    IconButton(
                         onClick = {
                             val taxVal = defaultTaxStr.toDoubleOrNull() ?: 0.0
                             val updated = BusinessProfile(
@@ -136,10 +150,10 @@ fun BusinessProfileScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
-        containerColor = Color(0xFFF7F9FC)
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
@@ -154,7 +168,7 @@ fun BusinessProfileScreen(
                         .fillMaxWidth()
                         .padding(20.dp),
                     shape = RoundedCornerShape(28.dp),
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.surface,
                     shadowElevation = 2.dp
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
@@ -169,18 +183,21 @@ fun BusinessProfileScreen(
                                 Icon(
                                     imageVector = Icons.Default.Business,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer
                                 )
                             }
                             Spacer(modifier = Modifier.width(14.dp))
                             Column {
                                 Text(
                                     text = "Perfil Comercial",
-                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
                                 )
                                 Text(
                                     text = "Estos datos aparecerán en los presupuestos, PDF e imágenes.",
-                                    style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF64748B))
+                                    style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 )
                             }
                         }
@@ -266,20 +283,23 @@ fun BusinessProfileScreen(
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp),
                     shape = RoundedCornerShape(28.dp),
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.surface,
                     shadowElevation = 2.dp
                 ) {
                     Column(modifier = Modifier.padding(20.dp)) {
                         Text(
                             text = "Configuración por Defecto",
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                         )
                         Spacer(modifier = Modifier.height(12.dp))
 
                         // Currency Selector
                         Text(
                             text = "Moneda del Negocio",
-                            style = MaterialTheme.typography.labelMedium.copy(color = Color(0xFF64748B))
+                            style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Row(
@@ -287,10 +307,18 @@ fun BusinessProfileScreen(
                             horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             commonCurrencies.take(4).forEach { cur ->
+                                val isSelected = currencySymbol == cur
                                 FilterChip(
-                                    selected = currencySymbol == cur,
+                                    selected = isSelected,
                                     onClick = { currencySymbol = cur },
-                                    label = { Text(cur, fontWeight = FontWeight.Bold) }
+                                    label = { Text(cur, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium) },
+                                    shape = RoundedCornerShape(14.dp),
+                                    colors = FilterChipDefaults.filterChipColors(
+                                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                        selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                        labelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
                                 )
                             }
                         }
@@ -368,7 +396,7 @@ fun BusinessProfileScreen(
                                 .fillMaxWidth()
                                 .height(52.dp),
                             shape = RoundedCornerShape(20.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF005FB0))
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                         ) {
                             Text("GUARDAR CAMBIOS", fontWeight = FontWeight.Bold)
                         }

@@ -64,7 +64,7 @@ fun ClientPickerBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = Color(0xFFF7F9FC),
+        containerColor = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
     ) {
         Column(
@@ -76,7 +76,7 @@ fun ClientPickerBottomSheet(
                 text = "Seleccionar Cliente",
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF0F172A)
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             )
 
@@ -90,20 +90,23 @@ fun ClientPickerBottomSheet(
                 Button(
                     onClick = onPickFromAgenda,
                     modifier = Modifier.weight(1f),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    ),
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Contacts,
                         contentDescription = "Agenda",
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = "Agenda Celular",
                         style = MaterialTheme.typography.labelLarge.copy(
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
                             fontWeight = FontWeight.SemiBold
                         )
                     )
@@ -150,7 +153,7 @@ fun ClientPickerBottomSheet(
                     Text(
                         text = if (contacts.isEmpty()) "No tienes clientes guardados aún.\nPuedes importar de tu agenda o crear uno." else "No se encontraron clientes",
                         style = MaterialTheme.typography.bodyMedium.copy(
-                            color = Color(0xFF64748B)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         ),
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
@@ -174,7 +177,7 @@ fun ClientPickerBottomSheet(
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(20.dp))
                                 .clickable { onSelectContact(contact) },
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.surfaceVariant,
                             shape = RoundedCornerShape(20.dp),
                             shadowElevation = 1.dp
                         ) {
@@ -188,14 +191,14 @@ fun ClientPickerBottomSheet(
                                     modifier = Modifier
                                         .size(40.dp)
                                         .clip(CircleShape)
-                                        .background(Color(0xFFE2E8F0)),
+                                        .background(MaterialTheme.colorScheme.secondaryContainer),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
                                         text = initials,
                                         style = MaterialTheme.typography.labelMedium.copy(
                                             fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF475569)
+                                            color = MaterialTheme.colorScheme.onSecondaryContainer
                                         )
                                     )
                                 }
@@ -207,7 +210,7 @@ fun ClientPickerBottomSheet(
                                         text = contact.name,
                                         style = MaterialTheme.typography.bodyLarge.copy(
                                             fontWeight = FontWeight.SemiBold,
-                                            color = Color(0xFF0F172A)
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
                                     )
                                     val subtitle = listOfNotNull(
@@ -218,7 +221,7 @@ fun ClientPickerBottomSheet(
                                         Text(
                                             text = subtitle,
                                             style = MaterialTheme.typography.bodySmall.copy(
-                                                color = Color(0xFF64748B)
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         )
                                     }

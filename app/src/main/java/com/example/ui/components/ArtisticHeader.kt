@@ -60,7 +60,7 @@ fun ArtisticHeader(
         modifier = modifier
             .fillMaxWidth()
             .shadow(4.dp, RoundedCornerShape(bottomStart = 36.dp, bottomEnd = 36.dp)),
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(bottomStart = 36.dp, bottomEnd = 36.dp)
     ) {
         Column(
@@ -90,7 +90,7 @@ fun ArtisticHeader(
                             fontFamily = FontFamily.Serif,
                             fontStyle = FontStyle.Italic,
                             fontWeight = FontWeight.Light,
-                            color = Color(0xFF0F172A)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     )
                 }
@@ -108,7 +108,7 @@ fun ArtisticHeader(
                         text = initials,
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     )
                 }
@@ -121,7 +121,7 @@ fun ArtisticHeader(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(20.dp))
-                    .background(Color(0xFFF8FAFC))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
                     .clickable { onClientClick() }
                     .padding(horizontal = 14.dp, vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -131,7 +131,7 @@ fun ArtisticHeader(
                     modifier = Modifier
                         .size(38.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFFE2E8F0)),
+                        .background(MaterialTheme.colorScheme.primaryContainer),
                     contentAlignment = Alignment.Center
                 ) {
                     if (clientName.isNotBlank()) {
@@ -139,14 +139,14 @@ fun ArtisticHeader(
                             text = clientInitials,
                             style = MaterialTheme.typography.labelMedium.copy(
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF475569)
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                         )
                     } else {
                         Icon(
                             imageVector = Icons.Default.Person,
                             contentDescription = "Cliente",
-                            tint = Color(0xFF64748B),
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -160,7 +160,7 @@ fun ArtisticHeader(
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.SemiBold,
                             letterSpacing = 1.sp,
-                            color = Color(0xFF64748B),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 10.sp
                         )
                     )
@@ -168,7 +168,7 @@ fun ArtisticHeader(
                         text = clientName.ifBlank { "Seleccionar o agregar cliente..." },
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Medium,
-                            color = if (clientName.isNotBlank()) Color(0xFF0F172A) else Color(0xFF94A3B8)
+                            color = if (clientName.isNotBlank()) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
                 }
@@ -184,7 +184,7 @@ fun ArtisticHeader(
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Cambiar cliente",
-                        tint = MaterialTheme.colorScheme.primary,
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier.size(18.dp)
                     )
                 }

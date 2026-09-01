@@ -63,7 +63,7 @@ fun CatalogPickerBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = Color(0xFFF7F9FC),
+        containerColor = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
     ) {
         Column(
@@ -80,7 +80,7 @@ fun CatalogPickerBottomSheet(
                     text = "Seleccionar del Catálogo",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF0F172A)
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 )
 
@@ -121,7 +121,7 @@ fun CatalogPickerBottomSheet(
                     Text(
                         text = "No se encontraron elementos en el catálogo",
                         style = MaterialTheme.typography.bodyMedium.copy(
-                            color = Color(0xFF64748B)
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
                 }
@@ -138,7 +138,7 @@ fun CatalogPickerBottomSheet(
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(20.dp))
                                 .clickable { onItemSelected(item) },
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.surfaceVariant,
                             shape = RoundedCornerShape(20.dp),
                             shadowElevation = 1.dp
                         ) {
@@ -160,7 +160,7 @@ fun CatalogPickerBottomSheet(
                                             text = item.name,
                                             style = MaterialTheme.typography.bodyLarge.copy(
                                                 fontWeight = FontWeight.SemiBold,
-                                                color = Color(0xFF0F172A)
+                                                color = MaterialTheme.colorScheme.onSurface
                                             )
                                         )
                                     }
@@ -168,7 +168,7 @@ fun CatalogPickerBottomSheet(
                                         Text(
                                             text = item.description,
                                             style = MaterialTheme.typography.bodySmall.copy(
-                                                color = Color(0xFF64748B)
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
                                             ),
                                             maxLines = 1
                                         )
@@ -186,7 +186,7 @@ fun CatalogPickerBottomSheet(
                                     Text(
                                         text = "por ${item.unit}",
                                         style = MaterialTheme.typography.labelSmall.copy(
-                                            color = Color(0xFF94A3B8)
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     )
                                 }

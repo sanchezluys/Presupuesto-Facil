@@ -23,10 +23,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.AlertDialog
@@ -59,6 +61,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -87,6 +90,7 @@ fun QuoteDetailScreen(
     val context = LocalContext.current
     val quoteWithItems by viewModel.selectedQuoteDetail.collectAsState()
     val profile by viewModel.businessProfile.collectAsState()
+    val isDarkMode by viewModel.isDarkMode.collectAsState()
 
     var showMenu by remember { mutableStateOf(false) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
@@ -112,6 +116,15 @@ fun QuoteDetailScreen(
                     }
                 },
                 actions = {
+                    IconButton(
+                        onClick = { viewModel.toggleDarkMode() },
+                        modifier = Modifier.testTag("dark_mode_toggle_detail")
+                    ) {
+                        Icon(
+                            imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
+                            contentDescription = if (isDarkMode) "Activar modo claro" else "Activar modo oscuro"
+                        )
+                    }
                     IconButton(onClick = { qwi?.let { onEditQuote(it.quote.id) } }) {
                         Icon(imageVector = Icons.Default.Edit, contentDescription = "Editar")
                     }
@@ -145,10 +158,10 @@ fun QuoteDetailScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
             )
         },
-        containerColor = Color(0xFFF7F9FC)
+        containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
         if (qwi == null) {
             Box(
@@ -176,7 +189,7 @@ fun QuoteDetailScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp, vertical = 12.dp),
                         shape = RoundedCornerShape(24.dp),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.surface,
                         shadowElevation = 1.dp
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
@@ -185,7 +198,7 @@ fun QuoteDetailScreen(
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Bold,
                                     letterSpacing = 1.2.sp,
-                                    color = Color(0xFF64748B)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             )
                             Spacer(modifier = Modifier.height(10.dp))
@@ -193,13 +206,14 @@ fun QuoteDetailScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
+                                val isDark = MaterialTheme.colorScheme.background.value == com.example.ui.theme.DarkBackground.value
                                 QuoteStatus.values().forEach { status ->
                                     val isSelected = q.status == status
                                     val statusColor = when (status) {
-                                        QuoteStatus.DRAFT -> StatusDraft
-                                        QuoteStatus.SENT -> StatusSent
-                                        QuoteStatus.ACCEPTED -> StatusAccepted
-                                        QuoteStatus.REJECTED -> StatusRejected
+                                        QuoteStatus.DRAFT -> if (isDark) com.example.ui.theme.StatusDraftDark else com.example.ui.theme.StatusDraftLight
+                                        QuoteStatus.SENT -> if (isDark) com.example.ui.theme.StatusSentDark else com.example.ui.theme.StatusSentLight
+                                        QuoteStatus.ACCEPTED -> if (isDark) com.example.ui.theme.StatusAcceptedDark else com.example.ui.theme.StatusAcceptedLight
+                                        QuoteStatus.REJECTED -> if (isDark) com.example.ui.theme.StatusRejectedDark else com.example.ui.theme.StatusRejectedLight
                                     }
                                     FilterChip(
                                         selected = isSelected,
@@ -207,14 +221,16 @@ fun QuoteDetailScreen(
                                         label = {
                                             Text(
                                                 text = status.displayName,
-                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                                 fontSize = 11.sp
                                             )
                                         },
                                         shape = RoundedCornerShape(14.dp),
                                         colors = FilterChipDefaults.filterChipColors(
-                                            selectedContainerColor = statusColor.copy(alpha = 0.2f),
-                                            selectedLabelColor = statusColor
+                                            selectedContainerColor = statusColor.copy(alpha = 0.22f),
+                                            selectedLabelColor = statusColor,
+                                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                            labelColor = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     )
                                 }
@@ -243,7 +259,10 @@ fun QuoteDetailScreen(
                             },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(20.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            )
                         ) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -252,7 +271,7 @@ fun QuoteDetailScreen(
                                 Text("📄", fontSize = 20.sp)
                                 Text(
                                     "PDF",
-                                    color = Color(0xFF0F172A),
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 11.sp
                                 )
@@ -271,7 +290,10 @@ fun QuoteDetailScreen(
                             },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(20.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            )
                         ) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -280,7 +302,7 @@ fun QuoteDetailScreen(
                                 Text("🖼️", fontSize = 20.sp)
                                 Text(
                                     "IMAGEN",
-                                    color = Color(0xFF0F172A),
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 11.sp
                                 )
@@ -299,7 +321,10 @@ fun QuoteDetailScreen(
                             },
                             modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(20.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            )
                         ) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -308,7 +333,7 @@ fun QuoteDetailScreen(
                                 Text("💬", fontSize = 20.sp)
                                 Text(
                                     "TEXTO",
-                                    color = Color(0xFF0F172A),
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 11.sp
                                 )
@@ -324,7 +349,7 @@ fun QuoteDetailScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 20.dp, vertical = 10.dp),
                         shape = RoundedCornerShape(32.dp),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.surface,
                         shadowElevation = 3.dp
                     ) {
                         Column(
@@ -353,14 +378,14 @@ fun QuoteDetailScreen(
                                         fontFamily = FontFamily.Serif,
                                         fontStyle = FontStyle.Italic,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF0F172A)
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 )
                                 Text(
                                     text = "#${q.quoteNumber}",
                                     style = MaterialTheme.typography.titleMedium.copy(
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF64748B)
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 )
                             }
@@ -371,7 +396,7 @@ fun QuoteDetailScreen(
                             Surface(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(20.dp),
-                                color = Color(0xFFF8FAFC)
+                                color = MaterialTheme.colorScheme.surfaceVariant
                             ) {
                                 Column(modifier = Modifier.padding(16.dp)) {
                                     Text(
@@ -379,7 +404,7 @@ fun QuoteDetailScreen(
                                         style = MaterialTheme.typography.labelSmall.copy(
                                             fontWeight = FontWeight.Bold,
                                             letterSpacing = 1.sp,
-                                            color = Color(0xFF64748B),
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                                             fontSize = 10.sp
                                         )
                                     )
@@ -388,13 +413,13 @@ fun QuoteDetailScreen(
                                         text = q.clientName.ifBlank { "Cliente General" },
                                         style = MaterialTheme.typography.titleMedium.copy(
                                             fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF0F172A)
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
                                     )
                                     if (q.clientCompany.isNotBlank()) {
                                         Text(
                                             text = q.clientCompany,
-                                            style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF64748B))
+                                            style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
                                         )
                                     }
                                     if (q.clientPhone.isNotBlank()) {
@@ -419,7 +444,7 @@ fun QuoteDetailScreen(
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
                                         text = "Emisión: ${Formatters.formatDate(q.createdAtMillis)} • Vence: ${Formatters.formatDate(q.validUntilMillis)}",
-                                        style = MaterialTheme.typography.labelSmall.copy(color = Color(0xFF94A3B8))
+                                        style = MaterialTheme.typography.labelSmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f))
                                     )
                                 }
                             }
@@ -432,7 +457,7 @@ fun QuoteDetailScreen(
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontWeight = FontWeight.Bold,
                                     letterSpacing = 1.2.sp,
-                                    color = Color(0xFF64748B)
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             )
                             Spacer(modifier = Modifier.height(10.dp))
@@ -450,13 +475,13 @@ fun QuoteDetailScreen(
                                             text = item.name,
                                             style = MaterialTheme.typography.bodyMedium.copy(
                                                 fontWeight = FontWeight.SemiBold,
-                                                color = Color(0xFF0F172A)
+                                                color = MaterialTheme.colorScheme.onSurface
                                             )
                                         )
                                         Text(
                                             text = "${Formatters.formatNumber(item.quantity)} ${item.unit} x ${Formatters.formatMoney(item.unitPrice, currency)}",
                                             style = MaterialTheme.typography.bodySmall.copy(
-                                                color = Color(0xFF64748B)
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         )
                                     }
@@ -464,7 +489,7 @@ fun QuoteDetailScreen(
                                         text = Formatters.formatMoney(item.total, currency),
                                         style = MaterialTheme.typography.bodyLarge.copy(
                                             fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF0F172A)
+                                            color = MaterialTheme.colorScheme.onSurface
                                         )
                                     )
                                 }
@@ -475,7 +500,7 @@ fun QuoteDetailScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(1.dp)
-                                    .background(Color(0xFFE2E8F0))
+                                    .background(MaterialTheme.colorScheme.outlineVariant)
                             )
                             Spacer(modifier = Modifier.height(14.dp))
 
@@ -484,10 +509,10 @@ fun QuoteDetailScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Text("Subtotal", style = MaterialTheme.typography.bodyMedium.copy(color = Color(0xFF64748B)))
+                                Text("Subtotal", style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onSurfaceVariant))
                                 Text(
                                     Formatters.formatMoney(qwi.subtotal, currency),
-                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
                                 )
                             }
 
@@ -519,11 +544,11 @@ fun QuoteDetailScreen(
                                 ) {
                                     Text(
                                         "Impuesto / IVA (${Formatters.formatNumber(q.taxPercent)}%)",
-                                        style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF64748B))
+                                        style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     )
                                     Text(
                                         "+${Formatters.formatMoney(qwi.taxAmount, currency)}",
-                                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold)
+                                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
                                     )
                                 }
                             }
@@ -534,7 +559,7 @@ fun QuoteDetailScreen(
                             Surface(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(20.dp),
-                                color = Color(0xFF005FB0)
+                                color = MaterialTheme.colorScheme.primary
                             ) {
                                 Row(
                                     modifier = Modifier
@@ -547,14 +572,14 @@ fun QuoteDetailScreen(
                                         text = "TOTAL",
                                         style = MaterialTheme.typography.titleMedium.copy(
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.White
+                                            color = MaterialTheme.colorScheme.onPrimary
                                         )
                                     )
                                     Text(
                                         text = Formatters.formatMoney(qwi.total, currency),
                                         style = MaterialTheme.typography.headlineSmall.copy(
                                             fontWeight = FontWeight.Bold,
-                                            color = Color.White
+                                            color = MaterialTheme.colorScheme.onPrimary
                                         )
                                     )
                                 }
@@ -567,12 +592,12 @@ fun QuoteDetailScreen(
                                         text = "NOTAS:",
                                         style = MaterialTheme.typography.labelSmall.copy(
                                             fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF64748B)
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     )
                                     Text(
                                         text = q.notes,
-                                        style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569))
+                                        style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     )
                                 }
                                 if (q.terms.isNotBlank()) {
@@ -581,12 +606,12 @@ fun QuoteDetailScreen(
                                         text = "CONDICIONES DE PAGO:",
                                         style = MaterialTheme.typography.labelSmall.copy(
                                             fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF64748B)
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     )
                                     Text(
                                         text = q.terms,
-                                        style = MaterialTheme.typography.bodySmall.copy(color = Color(0xFF475569))
+                                        style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     )
                                 }
                             }
